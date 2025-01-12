@@ -764,6 +764,69 @@ export class AttendMeBackendClientBase {
     }
 
     /**
+     * @param attendingUserId (optional) 
+     * @param courseSessionId (optional) 
+     * @param addOrRemove (optional) 
+     * @return Success
+     */
+    courseSessionAttendanceToggle(attendingUserId: number | undefined, courseSessionId: number | undefined, addOrRemove: boolean | undefined): Promise<AttendanceLog[]> {
+        let url_ = this.baseUrl + "/course/session/attendance/toggle?";
+        if (attendingUserId === null)
+            throw new Error("The parameter 'attendingUserId' cannot be null.");
+        else if (attendingUserId !== undefined)
+            url_ += "attendingUserId=" + encodeURIComponent("" + attendingUserId) + "&";
+        if (courseSessionId === null)
+            throw new Error("The parameter 'courseSessionId' cannot be null.");
+        else if (courseSessionId !== undefined)
+            url_ += "courseSessionId=" + encodeURIComponent("" + courseSessionId) + "&";
+        if (addOrRemove === null)
+            throw new Error("The parameter 'addOrRemove' cannot be null.");
+        else if (addOrRemove !== undefined)
+            url_ += "addOrRemove=" + encodeURIComponent("" + addOrRemove) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCourseSessionAttendanceToggle(_response);
+        });
+    }
+
+    protected processCourseSessionAttendanceToggle(response: Response): Promise<AttendanceLog[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AttendanceLog[];
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AttendanceLog[]>(null as any);
+    }
+
+    /**
      * @param token (optional) 
      * @return Success
      */
