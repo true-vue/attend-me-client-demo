@@ -15,7 +15,7 @@ export class AttendMeBackendClient extends AttendMeBackendClientBase {
       fetch: null,
     }
     super(url, http as ApiHttpClient)
-    ;(http as ApiHttpClient).fetch = this.fetchWrapper.bind(this)
+      ; (http as ApiHttpClient).fetch = this.fetchWrapper.bind(this)
 
     this.jsonParseReviver = dateReviver
 
@@ -36,6 +36,11 @@ export class AttendMeBackendClient extends AttendMeBackendClientBase {
     if (rawUserAuthData) {
       this.userTokenResult = JSON.parse(rawUserAuthData, dateReviver)
     }
+  }
+
+  deviceAuthReset() {
+    this.deviceTokenResult = undefined;
+    window.localStorage.removeItem('attend-me:deviceAuthData')
   }
 
   override userLogin(loginName: string, password: string): Promise<TokenResult> {
@@ -107,8 +112,6 @@ export class AttendMeBackendClient extends AttendMeBackendClientBase {
 
     return request
   }
-
-  private restore() {}
 }
 
 type ApiHttpClient = {

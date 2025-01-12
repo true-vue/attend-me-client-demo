@@ -362,8 +362,8 @@ export class AttendMeBackendClientBase {
      * @param sessionId (optional) 
      * @return Success
      */
-    courseSessionGet(sessionId: number | undefined): Promise<CourseSessionListItem> {
-        let url_ = this.baseUrl + "/course/session/get?";
+    courseTeacherSessionGet(sessionId: number | undefined): Promise<CourseSessionListItem> {
+        let url_ = this.baseUrl + "/course/teacher/session/get?";
         if (sessionId === null)
             throw new Error("The parameter 'sessionId' cannot be null.");
         else if (sessionId !== undefined)
@@ -378,11 +378,11 @@ export class AttendMeBackendClientBase {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCourseSessionGet(_response);
+            return this.processCourseTeacherSessionGet(_response);
         });
     }
 
-    protected processCourseSessionGet(response: Response): Promise<CourseSessionListItem> {
+    protected processCourseTeacherSessionGet(response: Response): Promise<CourseSessionListItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -403,6 +403,100 @@ export class AttendMeBackendClientBase {
             });
         }
         return Promise.resolve<CourseSessionListItem>(null as any);
+    }
+
+    /**
+     * @param courseGroupId (optional) 
+     * @return Success
+     */
+    courseStudentGroupSessionsGet(courseGroupId: number | undefined): Promise<CourseSessionListItem[]> {
+        let url_ = this.baseUrl + "/course/student/group/sessions/get?";
+        if (courseGroupId === null)
+            throw new Error("The parameter 'courseGroupId' cannot be null.");
+        else if (courseGroupId !== undefined)
+            url_ += "courseGroupId=" + encodeURIComponent("" + courseGroupId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCourseStudentGroupSessionsGet(_response);
+        });
+    }
+
+    protected processCourseStudentGroupSessionsGet(response: Response): Promise<CourseSessionListItem[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as CourseSessionListItem[];
+            return result200;
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CourseSessionListItem[]>(null as any);
+    }
+
+    /**
+     * @param courseGroupId (optional) 
+     * @return Success
+     */
+    courseStudentAttendanceGet(courseGroupId: number | undefined): Promise<AttendanceLog[]> {
+        let url_ = this.baseUrl + "/course/student/attendance/get?";
+        if (courseGroupId === null)
+            throw new Error("The parameter 'courseGroupId' cannot be null.");
+        else if (courseGroupId !== undefined)
+            url_ += "courseGroupId=" + encodeURIComponent("" + courseGroupId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCourseStudentAttendanceGet(_response);
+        });
+    }
+
+    protected processCourseStudentAttendanceGet(response: Response): Promise<AttendanceLog[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AttendanceLog[];
+            return result200;
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AttendanceLog[]>(null as any);
     }
 
     /**
@@ -620,7 +714,7 @@ export class AttendMeBackendClientBase {
      * @param attenderToken (optional) 
      * @return Success
      */
-    courseSessionAttendanceRegister(attenderToken: string | undefined): Promise<void> {
+    courseSessionAttendanceRegister(attenderToken: string | undefined): Promise<User> {
         let url_ = this.baseUrl + "/course/session/attendance/register?";
         if (attenderToken === null)
             throw new Error("The parameter 'attenderToken' cannot be null.");
@@ -631,6 +725,7 @@ export class AttendMeBackendClientBase {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "text/plain"
             }
         };
 
@@ -639,12 +734,14 @@ export class AttendMeBackendClientBase {
         });
     }
 
-    protected processCourseSessionAttendanceRegister(response: Response): Promise<void> {
+    protected processCourseSessionAttendanceRegister(response: Response): Promise<User> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as User;
+            return result200;
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
@@ -663,7 +760,7 @@ export class AttendMeBackendClientBase {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<User>(null as any);
     }
 
     /**
@@ -1092,9 +1189,7 @@ export class AttendMeBackendClientBase {
 export interface AttendanceLog {
     attendanceLogId?: number;
     attenderUserId?: number;
-    userAttender?: User;
     courseSessionId?: number;
-    courseSession?: CourseSession;
     readonly dateCreated?: Date;
 }
 
@@ -1281,7 +1376,6 @@ export interface User {
     teacher?: Teacher;
     readonly isTeacher?: boolean;
     readonly dateCreated?: Date;
-    deviceKey?: string | undefined;
     deviceName?: string | undefined;
     isAdmin?: boolean;
 }

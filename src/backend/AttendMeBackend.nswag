@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "https://localhost:7295/swagger/v1/swagger.json",
+      "url": "https://attendme-backend.runasp.net/swagger/v1/swagger.json",
       "output": null,
       "newLineBehavior": "Auto"
     }
